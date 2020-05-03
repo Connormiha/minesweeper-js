@@ -1,4 +1,4 @@
-import Cell from 'components/common/Cell';
+import {createCell, renderCell} from 'components/common/Cell';
 import bem from 'bem-css-modules';
 import {
   IS_OPENED_BIT_FLAG,
@@ -33,13 +33,11 @@ export default class Field {
   private _actions: PropsType;
   private _gameState: SchemaType;
   private _timer!: number;
-  private _cells: Cell[];
 
   constructor(actions: PropsType, gameState: SchemaType) {
     this._actions = actions;
     this._isLockedEvents = false;
     this._gameState = gameState;
-    this._cells = [];
 
     this.element = document.createElement('div');
     this.element.className = b();
@@ -53,12 +51,11 @@ export default class Field {
 
   public renderAll(): void {
     const fragment = document.createDocumentFragment();
-    this._cells = [];
 
     for (let i = 0; i < this._gameState.field.field.length; i++) {
-      this._cells[i] = new Cell();
-      this._cells[i].render(this._gameState.field.field[i], this._gameState.field.showAllBombs);
-      fragment.appendChild(this._cells[i].element);
+      const cell = createCell();
+      renderCell(cell, this._gameState.field.field[i], this._gameState.field.showAllBombs);
+      fragment.appendChild(cell);
     }
 
     this.element.innerHTML = '';
@@ -70,7 +67,7 @@ export default class Field {
     this.element.className = b({
       locked: this._gameState.field.showAllBombs || this._gameState.game.state === 'win'
     });
-    this._cells[id].render(this._gameState.field.field[id], this._gameState.field.showAllBombs);
+    renderCell(this.element.children[id] as HTMLButtonElement, this._gameState.field.field[id], this._gameState.field.showAllBombs);
   }
 
   public handleEvent(e: MouseEvent | KeyboardEvent): void {

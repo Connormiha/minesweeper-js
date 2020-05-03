@@ -1,1 +1,1 @@
-export {default} from './cell';
+export {createCell, renderCell} from './cell';

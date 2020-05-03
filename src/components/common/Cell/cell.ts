@@ -31,38 +31,36 @@ const getAriaLabel = (cell: number): string => {
   return 'not oppened cell';
 };
 
-export default class Cell {
-  public element: HTMLButtonElement;
+export const createCell = (): HTMLButtonElement => {
+  const element = document.createElement('button');
+  element.type = 'button';
 
-  constructor() {
-    this.element = document.createElement('button');
-    this.element.type = 'button';
-  }
-
-  public render(cell: CellType, isShowBomb: boolean): void {
-    const isBomb = Boolean(cell & IS_BOMB_BIT_FLAG);
-    const isOpened = Boolean(cell & IS_OPENED_BIT_FLAG);
-    const isDead = isBomb && isOpened;
-    const isFlag = Boolean(cell & IS_FLAG_BIT_FLAG);
-    const isUnknown = Boolean(cell & IS_UNKNOWN_BIT_FLAG);
-    const aroundBombCount = cell >> 4;
-
-    const cssMods: Record<string, boolean | number> = {
-      open: isOpened || (isShowBomb && isBomb),
-      close: !isOpened && (!isShowBomb || !isBomb),
-      bomb: (isOpened || isShowBomb) && isBomb,
-      dead: isDead,
-      flag: isFlag && !isOpened,
-      question: isUnknown && !isOpened,
-    };
-
-    if (aroundBombCount && isOpened && !isBomb) {
-      cssMods.count = aroundBombCount;
-    }
-
-    this.element.className = b(cssMods);
-    this.element.disabled = isOpened && aroundBombCount === 0;
-    this.element.setAttribute('aria-label', getAriaLabel(cell));
-    this.element.textContent = isOpened && !isBomb && aroundBombCount ? String(aroundBombCount) : '';
-  }
+  return element;
 }
+
+export const renderCell = (element: HTMLButtonElement, cell: CellType, isShowBomb: boolean): void => {
+  const isBomb = Boolean(cell & IS_BOMB_BIT_FLAG);
+  const isOpened = Boolean(cell & IS_OPENED_BIT_FLAG);
+  const isDead = isBomb && isOpened;
+  const isFlag = Boolean(cell & IS_FLAG_BIT_FLAG);
+  const isUnknown = Boolean(cell & IS_UNKNOWN_BIT_FLAG);
+  const aroundBombCount = cell >> 4;
+
+  const cssMods: Record<string, boolean | number> = {
+    open: isOpened || (isShowBomb && isBomb),
+    close: !isOpened && (!isShowBomb || !isBomb),
+    bomb: (isOpened || isShowBomb) && isBomb,
+    dead: isDead,
+    flag: isFlag && !isOpened,
+    question: isUnknown && !isOpened,
+  };
+
+  if (aroundBombCount && isOpened && !isBomb) {
+    cssMods.count = aroundBombCount;
+  }
+
+  element.className = b(cssMods);
+  element.disabled = isOpened && aroundBombCount === 0;
+  element.setAttribute('aria-label', getAriaLabel(cell));
+  element.textContent = isOpened && !isBomb && aroundBombCount ? String(aroundBombCount) : '';
+};
