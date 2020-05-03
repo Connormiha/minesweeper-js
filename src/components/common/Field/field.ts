@@ -195,7 +195,7 @@ export default class Field {
       (parent.children[nextId] as HTMLButtonElement).focus();
     }
 
-    this._timer = setTimeout(() => this._unlockEvents(), 100);
+    this._timer = setTimeout(() => this._unlockEvents(), 100) as unknown as number;
   }
 
   private _quickOpen(id: number): void {
