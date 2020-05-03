@@ -8,6 +8,8 @@ export type FieldStoreType = {
     openedCount: number;
     showAllBombs: boolean;
     isGenerated: boolean;
+    isRenderInProgres: boolean;
+    totalRendered: number;
 };
 
 export type GameState = 'fail' | 'win' | 'in-progress' | 'not-started';

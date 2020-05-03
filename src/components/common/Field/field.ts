@@ -50,15 +50,27 @@ export default class Field {
   }
 
   public renderAll(): void {
-    const fragment = document.createDocumentFragment();
+    this.element.innerHTML = '';
+    this.element.style.width = `${this._gameState.game.width * 34}px`;
 
-    for (let i = 0; i < this._gameState.field.field.length; i++) {
+    this._renderBatch(0, 10000);
+  }
+
+  private _renderBatch(from: number, limit: number): void {
+    const fragment = document.createDocumentFragment();
+    const end = Math.min(this._gameState.field.field.length, from + limit);
+
+    for (let i = from; i < end; i++) {
       fragment.appendChild(createCell());
     }
 
-    this.element.innerHTML = '';
-    this.element.style.width = `${this._gameState.game.width * 34}px`;
     this.element.appendChild(fragment);
+
+    if (end < this._gameState.field.field.length) {
+      requestAnimationFrame(() => {
+        this._renderBatch(from + limit, limit);
+      });
+    }
   }
 
   public renderCell(id: number): void {

@@ -18,6 +18,8 @@ const schema: SchemaType = {
     openedCount: 0,
     showAllBombs: false,
     isGenerated: false,
+    isRenderInProgres: false,
+    totalRendered: 0,
   },
 };
 
