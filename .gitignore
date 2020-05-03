@@ -4,4 +4,11 @@
 /build
 /deploy
 /coverage
+/src
+/helpers
+/stories
+/.storybook
+__tests__
+.vscode
 npm-debug.log
+yarn-error.log
