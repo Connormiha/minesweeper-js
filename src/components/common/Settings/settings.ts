@@ -39,20 +39,18 @@ class TextInput {
   }
 }
 
-type ISetingsActions {
+type ISetingsActions = {
   onStart: () => void;
 }
 
 export default class Settings {
   public element: HTMLFormElement;
-  private _game: GameType;
   private _inputWidth: TextInput;
   private _inputHeight: TextInput;
   private _inputMinesCount: TextInput;
   private _actions: ISetingsActions;
 
   constructor(game: GameType, actions: ISetingsActions) {
-    this._game = game;
     this._actions = actions;
 
     this.element = document.createElement('form');

@@ -25,8 +25,6 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': ['error', {
         prefixWithI: 'always'
     }],
-    'sonarjs/cognitive-complexity': ['error', 40],
-    'react/display-name': 'off',
-    'react/prop-types': 'off'
+    'sonarjs/cognitive-complexity': ['error', 40]
   }
 };

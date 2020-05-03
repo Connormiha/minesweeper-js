@@ -2,6 +2,7 @@ import './style.styl';
 
 import Settings from 'components/common/Settings';
 import Field from 'components/common/Field';
+import GameStatus from 'components/common/game-status';
 import schema from 'reducers/schema';
 import fieldGenerator, {fieldGeneratorEmpty} from 'helpers/field-generator';
 import {
@@ -12,18 +13,19 @@ import {
   IS_UNKNOWN_BIT_FLAG,
   IS_EVERYTHING_BIT_FLAG,
 } from 'helpers/utils';
-import type {FieldType, FieldStoreType, FieldFillParams} from 'flux/types';
 
 class App {
   private _root: HTMLDivElement;
   private _settings: Settings;
   private _field: Field;
+  private _gameStatus: GameStatus;
 
   constructor(root: HTMLDivElement) {
     this._root = root;
     this._settings = new Settings(schema.game, {
       onStart: (): void => this.onStart()
     });
+    this._gameStatus = new GameStatus();
     this._field = new Field(
       {
         onClickCell: (id: number): void => {
@@ -37,23 +39,25 @@ class App {
             schema.field.isGenerated = true;
           }
           this._cellOpen(id);
+          this._checkFinish();
+          this._gameStatus.render({
+            minesLeftCount: schema.game.minesCount - schema.field.flagsCount,
+            state: schema.game.state
+          });
         },
         onClickMarkCell: (id: number): void => {
           const cell = schema.field.field[id];
 
           if (cell & IS_UNKNOWN_BIT_FLAG) {
             this._updateCell(id, 0, ~IS_UNKNOWN_BIT_FLAG);
-            return;
-          }
-
-          if (cell & IS_FLAG_BIT_FLAG) {
+          } else if (cell & IS_FLAG_BIT_FLAG) {
             this._updateCell(id, IS_UNKNOWN_BIT_FLAG, ~IS_FLAG_BIT_FLAG)
             schema.field.flagsCount--;
-            return;
+          } else {
+            this._updateCell(id, IS_FLAG_BIT_FLAG)
+            schema.field.flagsCount++;
           }
-
-          this._updateCell(id, IS_FLAG_BIT_FLAG)
-          schema.field.flagsCount++;
+          this._checkFinish();
         },
         onClickQuickOpenCell: (id: number): void => {
           const cell = schema.field.field[id];
@@ -88,6 +92,8 @@ class App {
               });
             }
           }
+
+          this._checkFinish();
         }
       },
       schema
@@ -95,6 +101,7 @@ class App {
 
     this._root.appendChild(this._settings.element);
     this._root.appendChild(this._field.element);
+    this._root.appendChild(this._gameStatus.element);
 
     this.onStart();
   }
@@ -107,7 +114,7 @@ class App {
   }
 
   private _cellOpen(id: number): void {
-    const cell = schema.field[id];
+    const cell = schema.field.field[id];
 
     if ((cell >> 4) === 0 && !(cell & IS_BOMB_BIT_FLAG)) {
       this._openAllowedSiblings(id);
@@ -118,15 +125,12 @@ class App {
   }
 
   private _openCellState(id: number): void {
-    if (schema.field[id] & IS_OPENED_BIT_FLAG) {
+    if (schema.field.field[id] & IS_OPENED_BIT_FLAG) {
       return;
     }
 
-    if (schema.field[id] & IS_BOMB_BIT_FLAG) {
+    if (schema.field.field[id] & IS_BOMB_BIT_FLAG) {
       schema.field.showAllBombs = true;
-      schema.field.openedCount++;
-      this._updateCell(id, IS_OPENED_BIT_FLAG);
-      return;
     }
 
     schema.field.openedCount++;
@@ -172,6 +176,30 @@ class App {
         }
       }
     }
+  }
+
+  private _checkFinish(): void {
+    const {field, game} = schema;
+
+    if (field.showAllBombs && game.state !== 'fail') {
+      this._onFinishGame(true);
+    } else if (
+      game.state === 'in-progress' &&
+        (
+          field.flagsCount + field.openedCount === field.field.length ||
+            (
+              field.field.length === field.openedCount + game.minesCount &&
+                !field.showAllBombs
+            )
+        )
+    ) {
+      this._onFinishGame(false);
+    }
+  }
+
+  private _onFinishGame(isFail: boolean): void {
+    schema.game.state = isFail ? 'fail' : 'win';
+    this._field.renderAll();
   }
 }
 

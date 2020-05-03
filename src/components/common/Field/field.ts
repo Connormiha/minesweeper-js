@@ -6,7 +6,7 @@ import {
   IS_UNKNOWN_BIT_FLAG,
 } from 'helpers/utils';
 
-import type {CellType, FieldStoreType} from 'flux/types';
+import type {CellType} from 'flux/types';
 import { SchemaType } from 'reducers/schema';
 
 import style from './field.styl';
@@ -32,7 +32,7 @@ export default class Field {
   private _isLockedEvents: boolean;
   private _actions: PropsType;
   private _gameState: SchemaType;
-  private _timer!: NodeJS.Timeout;
+  private _timer!: number;
   private _cells: Cell[];
 
   constructor(actions: PropsType, gameState: SchemaType) {
@@ -48,7 +48,7 @@ export default class Field {
     this.element.addEventListener('contextmenu', this);
     this.element.addEventListener('dblclick', this);
     this.element.addEventListener('mouseup', this);
-    this.element.addEventListener('keydown', this._handleKeyPress)
+    this.element.addEventListener('keydown', this);
   }
 
   public renderAll(): void {
@@ -57,7 +57,7 @@ export default class Field {
 
     for (let i = 0; i < this._gameState.field.field.length; i++) {
       this._cells[i] = new Cell();
-      this._cells[i].render(this._gameState.field[i], this._gameState.field.showAllBombs);
+      this._cells[i].render(this._gameState.field.field[i], this._gameState.field.showAllBombs);
       fragment.appendChild(this._cells[i].element);
     }
 
@@ -183,11 +183,11 @@ export default class Field {
         break;
 
       case KEY_UP:
-        nextId = this._getPrevAvailableId(id - this._gameState.field.rowWidth);
+        nextId = this._getPrevAvailableId(id - this._gameState.game.width);
         break;
 
       case KEY_DOWN:
-        nextId = this._getNextAvailableId(id + this._gameState.field.rowWidth);
+        nextId = this._getNextAvailableId(id + this._gameState.game.width);
         break;
     }
 
@@ -227,14 +227,14 @@ export default class Field {
   }
 
   private _getCell(id: number): CellType {
-    return this._gameState.field[id];
+    return this._gameState.field.field[id];
   }
 
   private _getPrevAvailableId(id: number): number {
     while (id >= 0) {
       if (
-        !(this._gameState.field[id] & IS_OPENED_BIT_FLAG) ||
-              (this._gameState.field[id] >> 8) !== 0
+        !(this._getCell(id) & IS_OPENED_BIT_FLAG) ||
+              (this._getCell(id) >> 8) !== 0
       ) {
         break;
       }
@@ -247,8 +247,8 @@ export default class Field {
   private _getNextAvailableId(id: number): number {
     while (id < this._gameState.field.field.length) {
       if (
-        !(this._gameState.field[id] & IS_OPENED_BIT_FLAG) ||
-              (this._gameState.field[id] >> 8) !== 0
+        !(this._getCell(id) & IS_OPENED_BIT_FLAG) ||
+          (this._getCell(id) >> 8) !== 0
       ) {
         break;
       }
