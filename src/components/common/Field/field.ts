@@ -53,9 +53,7 @@ export default class Field {
     const fragment = document.createDocumentFragment();
 
     for (let i = 0; i < this._gameState.field.field.length; i++) {
-      const cell = createCell();
-      renderCell(cell, this._gameState.field.field[i], this._gameState.field.showAllBombs);
-      fragment.appendChild(cell);
+      fragment.appendChild(createCell());
     }
 
     this.element.innerHTML = '';

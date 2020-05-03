@@ -31,9 +31,14 @@ const getAriaLabel = (cell: number): string => {
   return 'not oppened cell';
 };
 
+const defaultClassName = b({close: true});
+
 export const createCell = (): HTMLButtonElement => {
   const element = document.createElement('button');
+
   element.type = 'button';
+  element.setAttribute('aria-label', 'not oppened cell');
+  element.className = defaultClassName;
 
   return element;
 }
