@@ -199,7 +199,7 @@ class App {
 
   private _onFinishGame(isFail: boolean): void {
     schema.game.state = isFail ? 'fail' : 'win';
-    this._field.renderAll();
+    this._field.reRenderAll();
   }
 }
 

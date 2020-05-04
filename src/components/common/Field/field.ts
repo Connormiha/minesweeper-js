@@ -80,6 +80,16 @@ export default class Field {
     renderCell(this.element.children[id] as HTMLButtonElement, this._gameState.field.field[id], this._gameState.field.showAllBombs);
   }
 
+  public reRenderAll(): void {
+    this.element.className = b({
+      locked: this._gameState.field.showAllBombs || this._gameState.game.state === 'win'
+    });
+
+    for (let i = 0; i < this._gameState.field.field.length; i++) {
+      renderCell(this.element.children[i] as HTMLButtonElement, this._gameState.field.field[i], this._gameState.field.showAllBombs);
+    }
+  }
+
   public handleEvent(e: MouseEvent | KeyboardEvent): void {
     e.preventDefault();
     if (this._isLockedEvents) {
