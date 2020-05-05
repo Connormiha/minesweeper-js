@@ -70,7 +70,7 @@ export default class Field {
       ) {
         this._progress.startUpdateProgress();
       }
-    }, 1000) as unknown as number;
+    }, 500) as unknown as number;
     this._renderBatch(0, 10000);
   }
 

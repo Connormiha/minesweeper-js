@@ -108,6 +108,15 @@ class App {
   }
 
   private onStart(): void {
+    const totalCells = schema.game.width * schema.game.height;
+
+    if (
+      totalCells > 100000 &&
+      !confirm(`Your field includes ${totalCells} cells. It can takes a time for render`)
+    ) {
+      return;
+    }
+
     schema.game.state = 'in-progress';
     schema.field.showAllBombs = false;
     schema.field.field = fieldGeneratorEmpty(schema.game.width, schema.game.height);
