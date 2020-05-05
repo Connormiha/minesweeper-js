@@ -1,9 +1,11 @@
 import {createCell, renderCell} from 'components/common/Cell';
+import { createProgress, IProgress } from 'components/common/Progress/Progress';
 import bem from 'bem-css-modules';
 import {
   IS_OPENED_BIT_FLAG,
   IS_FLAG_BIT_FLAG,
   IS_UNKNOWN_BIT_FLAG,
+  IS_BOMB_BIT_FLAG,
 } from 'helpers/utils';
 
 import type {CellType} from 'flux/types';
@@ -33,11 +35,16 @@ export default class Field {
   private _actions: PropsType;
   private _gameState: SchemaType;
   private _timer!: number;
+  private _batchTimer!: number;
+  private _progress: IProgress;
+  public progressElement: HTMLDivElement;
 
   constructor(actions: PropsType, gameState: SchemaType) {
     this._actions = actions;
     this._isLockedEvents = false;
     this._gameState = gameState;
+    this._progress = createProgress(gameState.field);
+    this.progressElement = this._progress.element;
 
     this.element = document.createElement('div');
     this.element.className = b();
@@ -52,7 +59,18 @@ export default class Field {
   public renderAll(): void {
     this.element.innerHTML = '';
     this.element.style.width = `${this._gameState.game.width * 34}px`;
+    this.element.className = b();
 
+    this._gameState.field.isRenderInProgres = true;
+    this._gameState.field.totalRendered = 0;
+    this._batchTimer = setTimeout((): void => {
+      if (
+        this._gameState.field.isRenderInProgres &&
+        this._gameState.field.totalRendered / this._gameState.field.field.length < 0.5
+      ) {
+        this._progress.startUpdateProgress();
+      }
+    }, 1000) as unknown as number;
     this._renderBatch(0, 10000);
   }
 
@@ -66,10 +84,15 @@ export default class Field {
 
     this.element.appendChild(fragment);
 
+    this._gameState.field.totalRendered = from + limit;
+
     if (end < this._gameState.field.field.length) {
       requestAnimationFrame(() => {
         this._renderBatch(from + limit, limit);
       });
+    } else {
+      this._gameState.field.isRenderInProgres = false;
+      clearInterval(this._batchTimer);
     }
   }
 
@@ -86,7 +109,9 @@ export default class Field {
     });
 
     for (let i = 0; i < this._gameState.field.field.length; i++) {
-      renderCell(this.element.children[i] as HTMLButtonElement, this._gameState.field.field[i], this._gameState.field.showAllBombs);
+      if (i & IS_BOMB_BIT_FLAG) {
+        renderCell(this.element.children[i] as HTMLButtonElement, this._gameState.field.field[i], this._gameState.field.showAllBombs);
+      }
     }
   }
 

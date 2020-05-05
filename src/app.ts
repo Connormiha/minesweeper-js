@@ -102,12 +102,14 @@ class App {
     this._root.appendChild(this._settings.element);
     this._root.appendChild(this._field.element);
     this._root.appendChild(this._gameStatus.element);
+    this._root.appendChild(this._field.progressElement);
 
     this.onStart();
   }
 
   private onStart(): void {
     schema.game.state = 'in-progress';
+    schema.field.showAllBombs = false;
     schema.field.field = fieldGeneratorEmpty(schema.game.width, schema.game.height);
     schema.field.isGenerated = false;
     this._field.renderAll();
