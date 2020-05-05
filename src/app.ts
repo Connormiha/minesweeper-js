@@ -40,10 +40,6 @@ class App {
           }
           this._cellOpen(id);
           this._checkFinish();
-          this._gameStatus.render({
-            minesLeftCount: schema.game.minesCount - schema.field.flagsCount,
-            state: schema.game.state
-          });
         },
         onClickMarkCell: (id: number): void => {
           const cell = schema.field.field[id];
@@ -152,6 +148,10 @@ class App {
     schema.field.field[id] |= add;
     schema.field.field[id] &= remove;
     this._field.renderCell(id);
+    this._gameStatus.render({
+      minesLeftCount: schema.game.minesCount - schema.field.flagsCount,
+      state: schema.game.state
+    });
   }
 
   private _openAllowedSiblings(id: number): void {

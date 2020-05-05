@@ -2,10 +2,8 @@ import webpack from 'webpack';
 import {Configuration as WebpackDevServerConfiguration} from 'webpack-dev-server';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
-import ScriptExtHtmlWebpackPlugin from 'script-ext-html-webpack-plugin';
 import TerserWebpackPlugin from 'terser-webpack-plugin';
 import CssoWebpackPlugin from 'csso-webpack-plugin';
-// import PreloadWebpackPlugin from 'preload-webpack-plugin';
 import autoprefixer from 'autoprefixer';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -20,7 +18,7 @@ interface IConfiguration extends webpack.Configuration {
 
 const CONFIG = {
   production: {
-    localIdentName: '[hash:base64:5]',
+    localIdentName: '[hash:base64:4]',
     watch: false,
     FOLDER: `${__dirname}/build`,
     minifyHTML: {
@@ -29,9 +27,6 @@ const CONFIG = {
       removeStyleLinkTypeAttributes: true,
       removeRedundantAttributes: true,
       collapseWhitespace: true,
-    },
-    alias: {
-      invariant: 'lodash/noop',
     },
   },
   development: {
@@ -43,7 +38,6 @@ const CONFIG = {
       removeStyleLinkTypeAttributes: true,
       removeRedundantAttributes: true,
     },
-    alias: {},
   },
 }[NODE_ENV];
 
@@ -98,7 +92,7 @@ const webpackConfig: IConfiguration = {
         parallel: false,
         sourceMap: false,
         terserOptions: {
-          ecma: 8,
+          ecma: 2020,
           toplevel: true,
           output: {
             comments: false,
@@ -119,17 +113,6 @@ const webpackConfig: IConfiguration = {
       }),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       new CssoWebpackPlugin() as any,
-      // Waiting for support Webpack 4
-      // new PreloadWebpackPlugin({
-      //     rel: 'preload',
-      //     as(entry): string {
-      //         if (/\.css$/.test(entry)) return 'style';
-      //         if (/\.woff$/.test(entry)) return 'font';
-      //         if (/\.(svg|png)$/.test(entry)) return 'image';
-
-      //         return 'script';
-      //     },
-      // }),
     ],
   },
   watch: CONFIG.watch,
@@ -187,9 +170,7 @@ const webpackConfig: IConfiguration = {
       template: './src/index.html',
       inject: 'head',
       minify: CONFIG.minifyHTML,
-    }),
-    new ScriptExtHtmlWebpackPlugin({
-      defaultAttribute: 'defer',
+      scriptLoading: 'defer'
     }),
     new webpack.DefinePlugin({
       'process.env': {

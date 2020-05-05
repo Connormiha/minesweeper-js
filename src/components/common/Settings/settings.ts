@@ -1,11 +1,6 @@
-import bem from 'bem-css-modules';
 import style from './settings.styl';
 
 import type {GameType} from 'flux/types';
-
-const b = bem(style);
-const label = b('label');
-const labelText = b('label-text');
 
 type ISettingsInputProps = {
   min: string;
@@ -20,9 +15,9 @@ class TextInput {
 
   constructor(props: ISettingsInputProps) {
     this.element = document.createElement('label');
-    this.element.className = label;
+    this.element.className = style.settings__label;
     this.element.innerHTML = `
-      <span className="${labelText}">
+      <span className="${style['settings__label-text']}">
         ${props.title}
       </span>
       <input
@@ -57,7 +52,7 @@ export default class Settings {
     this._game = game;
 
     this.element = document.createElement('form');
-    this.element.className = b();
+    this.element.className = style.settings;
     this.element.addEventListener('submit', this);
 
     this._inputWidth = new TextInput({

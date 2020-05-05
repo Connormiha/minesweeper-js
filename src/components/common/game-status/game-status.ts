@@ -1,9 +1,5 @@
 import style from './game-status.styl';
 
-import bem from 'bem-css-modules';
-
-const b = bem(style);
-
 const MINES_LEFT_TEXT = 'Mines left: ';
 const WIN_STATUS_TEXT = 'You Winner!!!';
 
@@ -21,7 +17,7 @@ export default class GameStatus {
 
   public render(props: PropsType): void {
     this.element.innerHTML = this.renderInfo(props);
-    this.element.className = b('', {state: props.state});
+    this.element.className = `${style['game-status']} ${style[`game-status_state_${props.state}`]}`;
   }
 
   public renderMinesCount(minesLeftCount: number): string {

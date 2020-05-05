@@ -1,5 +1,4 @@
 import style from './cell.styl';
-import bem from 'bem-css-modules';
 import {
   IS_OPENED_BIT_FLAG,
   IS_BOMB_BIT_FLAG,
@@ -8,8 +7,6 @@ import {
 } from 'helpers/utils';
 
 import type {CellType} from 'flux/types';
-
-const b = bem(style);
 
 const getAriaLabel = (cell: number): string => {
   if (cell & IS_FLAG_BIT_FLAG) {
@@ -31,7 +28,7 @@ const getAriaLabel = (cell: number): string => {
   return 'not oppened cell';
 };
 
-const defaultClassName = b({close: true});
+const defaultClassName = `${style.cell} ${style.cell_close}`;
 
 export const createCell = (): HTMLButtonElement => {
   const element = document.createElement('button');
@@ -50,21 +47,35 @@ export const renderCell = (element: HTMLButtonElement, cell: CellType, isShowBom
   const isFlag = Boolean(cell & IS_FLAG_BIT_FLAG);
   const isUnknown = Boolean(cell & IS_UNKNOWN_BIT_FLAG);
   const aroundBombCount = cell >> 4;
+  const classes = [style.cell];
 
-  const cssMods: Record<string, boolean | number> = {
-    open: isOpened || (isShowBomb && isBomb),
-    close: !isOpened && (!isShowBomb || !isBomb),
-    bomb: (isOpened || isShowBomb) && isBomb,
-    dead: isDead,
-    flag: isFlag && !isOpened,
-    question: isUnknown && !isOpened,
-  };
+  if (isOpened || (isShowBomb && isBomb)) {
+    classes.push(style.cell_open);
 
-  if (aroundBombCount && isOpened && !isBomb) {
-    cssMods.count = aroundBombCount;
+    if ((isOpened || isShowBomb) && isBomb) {
+      classes.push(style.cell_bomb);
+    }
+
+    if (isDead) {
+      classes.push(style.cell_dead);
+    }
+  } else {
+    classes.push(style.cell_close);
   }
 
-  element.className = b(cssMods);
+  if (isFlag && !isOpened && !isShowBomb && !isBomb) {
+    classes.push(style.cell_flag);
+  }
+
+  if (isUnknown && !isOpened && !isShowBomb && !isBomb) {
+    classes.push(style.cell_question);
+  }
+
+  if (aroundBombCount && isOpened && !isBomb) {
+    classes.push(style[`cell_count_${aroundBombCount}`]);
+  }
+
+  element.className = classes.join(' ');
   element.disabled = isOpened && aroundBombCount === 0;
   element.setAttribute('aria-label', getAriaLabel(cell));
   element.textContent = isOpened && !isBomb && aroundBombCount ? String(aroundBombCount) : '';
