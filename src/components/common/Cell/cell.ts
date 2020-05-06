@@ -50,21 +50,25 @@ export const renderCell = (element: HTMLButtonElement, cell: CellType, isShowBom
   const classes = [style.cell];
 
   if (isOpened || (isShowBomb && isBomb)) {
-    classes.push(style.cell_open);
-
     if ((isOpened || isShowBomb) && isBomb) {
       classes.push(style.cell_bomb);
     }
 
     if (isDead) {
       classes.push(style.cell_dead);
+    } else {
+      classes.push(style.cell_open);
     }
   } else {
     classes.push(style.cell_close);
   }
 
-  if (isFlag && !isOpened && !isShowBomb && !isBomb) {
+  if (isFlag && !isOpened) {
     classes.push(style.cell_flag);
+  }
+
+  if (isFlag && !isBomb && isShowBomb) {
+    classes.push(style.cell_dead);
   }
 
   if (isUnknown && !isOpened && !isShowBomb && !isBomb) {
