@@ -35,76 +35,61 @@ class TextInput {
   }
 }
 
-type ISetingsActions = {
-  onStart: () => void;
-}
+export const createSettings = (game: GameType, onStart: () => void): HTMLFormElement => {
+  const element = document.createElement('form');
+  element.className = style.settings;
 
-export default class Settings {
-  public element: HTMLFormElement;
-  private _inputWidth: TextInput;
-  private _inputHeight: TextInput;
-  private _inputMinesCount: TextInput;
-  private _actions: ISetingsActions;
-  private _game: GameType;
+  const inputWidth = new TextInput({
+    min: '1',
+    max: '10000',
+    value: game.width,
+    title: 'Cols',
+  });
 
-  constructor(game: GameType, actions: ISetingsActions) {
-    this._actions = actions;
-    this._game = game;
+  const inputHeight = new TextInput({
+    min: '1',
+    max: '10000',
+    value: game.height,
+    title: 'Rows',
+  });
 
-    this.element = document.createElement('form');
-    this.element.className = style.settings;
-    this.element.addEventListener('submit', this);
+  const inputMinesCount = new TextInput({
+    min: '1',
+    max: '10000',
+    value: game.minesCount,
+    title: 'Mines count',
+  });
 
-    this._inputWidth = new TextInput({
-      min: '1',
-      max: '10000',
-      value: game.width,
-      title: 'Cols',
-    });
+  element.appendChild(inputWidth.element);
+  element.appendChild(inputHeight.element);
+  element.appendChild(inputMinesCount.element);
 
-    this._inputHeight = new TextInput({
-      min: '1',
-      max: '10000',
-      value: game.height,
-      title: 'Rows',
-    });
+  const submitBtn = document.createElement('input');
+  submitBtn.type = 'submit';
+  submitBtn.value = "Apply";
 
-    this._inputMinesCount = new TextInput({
-      min: '1',
-      max: '10000',
-      value: game.minesCount,
-      title: 'Mines count',
-    });
+  element.appendChild(submitBtn);
 
-    this.element.appendChild(this._inputWidth.element);
-    this.element.appendChild(this._inputHeight.element);
-    this.element.appendChild(this._inputMinesCount.element);
-
-    const submitBtn = document.createElement('input');
-    submitBtn.type = 'submit';
-    submitBtn.value = "Apply";
-
-    this.element.appendChild(submitBtn);
-  }
-
-  public handleEvent(e: Event): void {
+  element.addEventListener('submit', (e: Event): void => {
     e.preventDefault();
 
-    this._game.width = parseInt(
-      this._inputWidth.input.value,
+    game.width = parseInt(
+      inputWidth.input.value,
       10
     );
 
-    this._game.height = parseInt(
-      this._inputHeight.input.value,
+    game.height = parseInt(
+      inputHeight.input.value,
       10
     );
 
-    this._game.minesCount = parseInt(
-      this._inputMinesCount.input.value,
+    game.minesCount = parseInt(
+      inputMinesCount.input.value,
       10
     );
 
-    this._actions.onStart();
-  }
-}
+    onStart();
+  });
+
+  return element;
+};
