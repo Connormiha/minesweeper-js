@@ -11,7 +11,7 @@ import {
 import type {CellType} from 'flux/types';
 import { SchemaType } from 'reducers/schema';
 
-import style from './field.styl';
+import './field.styl';
 
 const KEY_ENTER = 13;
 const KEY_SPACE = 32;
@@ -45,7 +45,7 @@ export default class Field {
     this.progressElement = this._progress.element;
 
     this.element = document.createElement('div');
-    this.element.className = style.field;
+    this.element.className = 'field';
 
     this.element.addEventListener('click', this);
     this.element.addEventListener('contextmenu', this);
@@ -57,7 +57,7 @@ export default class Field {
   public renderAll(): void {
     this.element.innerHTML = '';
     this.element.style.width = `${this._gameState.game.width * 34}px`;
-    this.element.className = style.field;
+    this.element.className = 'field';
 
     this._gameState.field.isRenderInProgres = true;
     this._gameState.field.totalRendered = 0;
@@ -96,14 +96,14 @@ export default class Field {
 
   public renderCell(id: number): void {
     const locked = this._gameState.field.showAllBombs || this._gameState.game.state === 'win'
-    this.element.className = `${style.field} ${locked ? style.field_locked : ''}`
+    this.element.className = `field ${locked ? 'field_locked' : ''}`
 
     renderCell(this.element.children[id] as HTMLButtonElement, this._gameState.field.field[id], this._gameState.field.showAllBombs);
   }
 
   public reRenderAll(): void {
     const locked = this._gameState.field.showAllBombs || this._gameState.game.state === 'win'
-    this.element.className = `${style.field} ${locked ? style.field_locked : ''}`
+    this.element.className = `field ${locked ? 'field_locked' : ''}`
 
     for (let i = 0; i < this._gameState.field.field.length; i++) {
       if (i & IS_BOMB_BIT_FLAG) {

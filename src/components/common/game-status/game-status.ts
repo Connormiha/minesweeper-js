@@ -1,4 +1,4 @@
-import style from './game-status.styl';
+import './game-status.styl';
 
 const MINES_LEFT_TEXT = 'Mines left: ';
 const WIN_STATUS_TEXT = 'You Winner!!!';
@@ -17,7 +17,7 @@ export default class GameStatus {
 
   public render(props: PropsType): void {
     this.element.innerHTML = this.renderInfo(props);
-    this.element.className = `${style['game-status']} ${style[`game-status_state_${props.state}`]}`;
+    this.element.className = `game-status game-status_state_${props.state}`;
   }
 
   public renderMinesCount(minesLeftCount: number): string {

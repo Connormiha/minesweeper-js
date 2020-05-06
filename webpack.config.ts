@@ -18,7 +18,6 @@ interface IConfiguration extends webpack.Configuration {
 
 const CONFIG = {
   production: {
-    localIdentName: '[hash:base64:4]',
     watch: false,
     FOLDER: `${__dirname}/build`,
     minifyHTML: {
@@ -30,7 +29,6 @@ const CONFIG = {
     },
   },
   development: {
-    localIdentName: '[local]',
     watch: true,
     FOLDER: `${__dirname}/deploy`,
     minifyHTML: {
@@ -45,11 +43,6 @@ const cssLoaders = [
   MiniCssExtractPlugin.loader,
   {
     loader: 'css-loader',
-    options: {
-      modules: {
-        localIdentName: CONFIG.localIdentName,
-      },
-    }
   },
   {
     loader: 'postcss-loader',

@@ -1,4 +1,4 @@
-import style from './Progress.styl';
+import './Progress.styl';
 
 import type {FieldStoreType} from 'flux/types';
 
@@ -9,15 +9,15 @@ export type IProgress = {
 
 export const createProgress = (field: FieldStoreType): IProgress => {
   const element = document.createElement('div');
-  element.className = style.progress;
+  element.className = 'progress';
   element.innerHTML = `
-    <div class="${style.progress__inner}">
-      <div class="${style.progress__progress}"></div>
-      <div class="${style.progress__text}"></div>
+    <div class="progress__inner">
+      <div class="progress__progress"></div>
+      <div class="progress__text"></div>
     </div>
   `;
-  const progressBlock = element.querySelector(`.${style.progress__progress}`) as HTMLDivElement;
-  const textBlock = element.querySelector(`.${style.progress__text}`) as HTMLDivElement;
+  const progressBlock = element.querySelector('.progress__progress') as HTMLDivElement;
+  const textBlock = element.querySelector('.progress__text') as HTMLDivElement;
 
   const startUpdateProgress = (): void => {
     element.style.display = 'flex';

@@ -1,4 +1,4 @@
-import style from './settings.styl';
+import './settings.styl';
 
 import type {GameType} from 'flux/types';
 
@@ -15,9 +15,9 @@ class TextInput {
 
   constructor(props: ISettingsInputProps) {
     this.element = document.createElement('label');
-    this.element.className = style.settings__label;
+    this.element.className = 'settings__label';
     this.element.innerHTML = `
-      <span className="${style['settings__label-text']}">
+      <span className="settings__label-text">
         ${props.title}
       </span>
       <input
@@ -37,7 +37,7 @@ class TextInput {
 
 export const createSettings = (game: GameType, onStart: () => void): HTMLFormElement => {
   const element = document.createElement('form');
-  element.className = style.settings;
+  element.className = 'settings';
 
   const inputWidth = new TextInput({
     min: '1',

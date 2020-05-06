@@ -1,4 +1,4 @@
-import style from './cell.styl';
+import './cell.styl';
 import {
   IS_OPENED_BIT_FLAG,
   IS_BOMB_BIT_FLAG,
@@ -28,7 +28,7 @@ const getAriaLabel = (cell: number): string => {
   return 'not oppened cell';
 };
 
-const defaultClassName = `${style.cell} ${style.cell_close}`;
+const defaultClassName = 'cell cell_close';
 
 export const createCell = (): HTMLButtonElement => {
   const element = document.createElement('button');
@@ -47,36 +47,36 @@ export const renderCell = (element: HTMLButtonElement, cell: CellType, isShowBom
   const isFlag = Boolean(cell & IS_FLAG_BIT_FLAG);
   const isUnknown = Boolean(cell & IS_UNKNOWN_BIT_FLAG);
   const aroundBombCount = cell >> 4;
-  const classes = [style.cell];
+  const classes = ['cell'];
 
   if (isOpened || (isShowBomb && isBomb)) {
     if ((isOpened || isShowBomb) && isBomb) {
-      classes.push(style.cell_bomb);
+      classes.push('cell_bomb');
     }
 
     if (isDead) {
-      classes.push(style.cell_dead);
+      classes.push('cell_dead');
     } else {
-      classes.push(style.cell_open);
+      classes.push('cell_open');
     }
   } else {
-    classes.push(style.cell_close);
+    classes.push('cell_close');
   }
 
   if (isFlag && !isOpened) {
-    classes.push(style.cell_flag);
+    classes.push('cell_flag');
   }
 
   if (isFlag && !isBomb && isShowBomb) {
-    classes.push(style.cell_dead);
+    classes.push('cell_dead');
   }
 
   if (isUnknown && !isOpened && !isShowBomb && !isBomb) {
-    classes.push(style.cell_question);
+    classes.push('cell_question');
   }
 
   if (aroundBombCount && isOpened && !isBomb) {
-    classes.push(style[`cell_count_${aroundBombCount}`]);
+    classes.push(`cell_count_${aroundBombCount}`);
   }
 
   element.className = classes.join(' ');
