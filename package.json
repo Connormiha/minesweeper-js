@@ -15,7 +15,7 @@
     "build": "rm -fr build && TS_NODE_PROJECT=\"tsconfig.webpack.json\" NODE_ENV=production webpack",
     "build:gh": "rm -fr build && TS_NODE_PROJECT=\"tsconfig.webpack.json\" NODE_ENV=production ROOT_URL=minesweeper-js webpack",
     "coverage": "NODE_ENV=testing jest --coverage --config jest.json",
-    "lint": "TS_NODE_PROJECT=\"tsconfig.webpack.json\" ts-node lint.ts",
+    "lint": "eslint --ext .ts,.tsx,.js ./ && stylint src",
     "precommit": "NODE_ENV=pre_commit npm run types && npm run lint",
     "prepush": "npm run lint && npm run types && npm test",
     "start": "TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-dev-server",

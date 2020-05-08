@@ -38,9 +38,9 @@ export const createCell = (): HTMLButtonElement => {
   element.className = defaultClassName;
 
   return element;
-}
+};
 
-export const renderCell = (element: HTMLButtonElement, cell: CellType, isShowBomb: boolean): void => {
+const createClassNameByCell = (cell: number, isShowBomb: boolean): string => {
   const isBomb = Boolean(cell & IS_BOMB_BIT_FLAG);
   const isOpened = Boolean(cell & IS_OPENED_BIT_FLAG);
   const isDead = isBomb && isOpened;
@@ -79,7 +79,21 @@ export const renderCell = (element: HTMLButtonElement, cell: CellType, isShowBom
     classes.push(`cell_count_${aroundBombCount}`);
   }
 
-  element.className = classes.join(' ');
+  return classes.join(' ');
+};
+
+const CELL_CSS_CLASSES = Array.from({length: 2**8})
+  .map((_, i) => createClassNameByCell(i, false));
+
+const CELL_SHOW_BOMB_CSS_CLASSES = Array.from({length: 2**8})
+  .map((_, i) => createClassNameByCell(i, true));
+
+export const renderCell = (element: HTMLButtonElement, cell: CellType, isShowBomb: boolean): void => {
+  const isBomb = Boolean(cell & IS_BOMB_BIT_FLAG);
+  const isOpened = Boolean(cell & IS_OPENED_BIT_FLAG);
+  const aroundBombCount = cell >> 4;
+
+  element.className = isShowBomb ? CELL_SHOW_BOMB_CSS_CLASSES[cell] : CELL_CSS_CLASSES[cell];
   element.disabled = isOpened && aroundBombCount === 0;
   element.setAttribute('aria-label', getAriaLabel(cell));
   element.textContent = isOpened && !isBomb && aroundBombCount ? String(aroundBombCount) : '';
