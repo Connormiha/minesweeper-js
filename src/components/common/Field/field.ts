@@ -106,8 +106,10 @@ export default class Field {
     this.element.className = `field ${locked ? 'field_locked' : ''}`
 
     for (let i = 0; i < this._gameState.field.field.length; i++) {
-      if (i & IS_BOMB_BIT_FLAG) {
-        renderCell(this.element.children[i] as HTMLButtonElement, this._gameState.field.field[i], this._gameState.field.showAllBombs);
+      const cell = this._gameState.field.field[i];
+
+      if (cell & IS_BOMB_BIT_FLAG) {
+        renderCell(this.element.children[i] as HTMLButtonElement, cell, this._gameState.field.showAllBombs);
       }
     }
   }
