@@ -4,7 +4,6 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import TerserWebpackPlugin from 'terser-webpack-plugin';
 import CssoWebpackPlugin from 'csso-webpack-plugin';
-import autoprefixer from 'autoprefixer';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const ROOT_URL = process.env.ROOT_URL || '';
@@ -43,14 +42,6 @@ const cssLoaders = [
   MiniCssExtractPlugin.loader,
   {
     loader: 'css-loader',
-  },
-  {
-    loader: 'postcss-loader',
-    options: {
-      plugins: [
-        autoprefixer()
-      ]
-    }
   }
 ];
 
