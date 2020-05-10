@@ -20,7 +20,7 @@ const createApp = (schema: SchemaType, root: HTMLDivElement): void => {
     schema.field.top = schema.game.height / 2 - schema.game.contentHeight / 2;
     schema.field.leftExtraCount = (schema.game.contentWidth - schema.game.visibleWidth) >> 1;
     schema.field.topExtraCount = (schema.game.contentHeight - schema.game.visibleHeight) >> 1;
-    console.log(schema.field);
+    console.log(schema);
   };
 
   const onStart = (): void => {

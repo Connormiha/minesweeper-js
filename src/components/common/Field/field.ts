@@ -114,9 +114,32 @@ export default class Field {
 
   public renderCell(id: number): void {
     const locked = this._gameState.field.showAllBombs || this._gameState.game.state === 'win'
-    this.element.className = `field ${locked ? 'field_locked' : ''}`
 
-    renderCell(this._content.children[id] as HTMLButtonElement, this._gameState.field.field[id], this._gameState.field.showAllBombs);
+    if (locked) {
+      this.element.classList.add('field_locked');
+    }
+
+    const row = id / this._gameState.game.width | 0
+    const column = id % this._gameState.game.width;
+    console.log(this._gameState);
+    console.log({row, column, id});
+    if (
+      row >= this._gameState.field.top
+      && row <= this._gameState.field.top + this._gameState.game.contentHeight
+      && column >= this._gameState.field.left
+      && column <= this._gameState.field.left + this._gameState.game.contentWidth
+    ) {
+      const index = (
+        ((row - this._gameState.field.top) * this._gameState.game.contentWidth)
+        + (column - this._gameState.field.left)
+      );
+      console.log({row, column, index, id});
+      renderCell(
+        this._content.children[index] as HTMLButtonElement,
+        this._gameState.field.field[id],
+        this._gameState.field.showAllBombs
+      );
+    }
   }
 
   public reRenderAll(): void {
@@ -136,9 +159,8 @@ export default class Field {
     e.preventDefault();
 
     if (e.type === 'scroll') {
-      this._gameState.field.left = this.element.scrollLeft / 34 | 0;
-      this._gameState.field.top = this.element.scrollTop / 34 | 0;
-      console.log(this._gameState.field.left, this._gameState.field.top);
+      this._gameState.field.left = Math.round(this.element.scrollLeft / 34);
+      this._gameState.field.top = Math.round(this.element.scrollTop / 34);
       this._updatePosition();
       return;
     }
@@ -159,7 +181,7 @@ export default class Field {
       return;
     }
 
-    const id = Array.prototype.indexOf.call(parent.children, current);
+    const id = this._getRealID(Array.prototype.indexOf.call(parent.children, current));
 
     switch (e.type) {
       case 'click': {
@@ -235,11 +257,11 @@ export default class Field {
 
     switch (keyCode) {
       case KEY_SPACE:
-        this._handleContextMenu(id);
+        this._handleContextMenu(this._getRealID(id));
         break;
 
       case KEY_ENTER:
-        this._openCellEvent(id, false);
+        this._openCellEvent(this._getRealID(id), false);
         break;
 
       case KEY_LEFT:
@@ -294,15 +316,24 @@ export default class Field {
     }
   }
 
+  private _getRealID(id: number): number {
+    const row = (id / this._gameState.game.contentWidth | 0) + this._gameState.field.top
+    const column = (id % this._gameState.game.contentWidth) + this._gameState.field.left;
+    return (
+      row  * this._gameState.game.width + column
+    );
+  }
+
   private _getCell(id: number): CellType {
     return this._gameState.field.field[id];
   }
 
   private _getPrevAvailableId(id: number): number {
     while (id >= 0) {
+      const cell = this._getCell(id);
       if (
-        !(this._getCell(id) & IS_OPENED_BIT_FLAG) ||
-              (this._getCell(id) >> 8) !== 0
+        !(cell & IS_OPENED_BIT_FLAG) ||
+              (cell >> 8) !== 0
       ) {
         break;
       }
@@ -314,9 +345,10 @@ export default class Field {
 
   private _getNextAvailableId(id: number): number {
     while (id < this._gameState.field.field.length) {
+      const cell = this._getCell(id);
       if (
-        !(this._getCell(id) & IS_OPENED_BIT_FLAG) ||
-          (this._getCell(id) >> 8) !== 0
+        !(cell & IS_OPENED_BIT_FLAG) ||
+          (cell >> 8) !== 0
       ) {
         break;
       }
