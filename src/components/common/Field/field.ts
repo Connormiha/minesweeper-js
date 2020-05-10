@@ -20,6 +20,7 @@ const KEY_DOWN = 40;
 const KEY_LEFT = 37;
 const KEY_RIGHT = 39;
 const allowedKeys = [KEY_ENTER, KEY_SPACE, KEY_DOWN, KEY_UP, KEY_LEFT, KEY_RIGHT];
+const EXTRA_VISIBLE_CELLS_COUNT = 2;
 
 type PropsType = {
     onClickCell: (id: number) => void;
@@ -29,11 +30,12 @@ type PropsType = {
 
 export default class Field {
   public element: HTMLDivElement;
+  private _content: HTMLDivElement;
+  private _contentWrapper: HTMLDivElement;
   private _isLockedEvents: boolean;
   private _actions: PropsType;
   private _gameState: SchemaType;
   private _timer!: number;
-  private _batchTimer!: number;
   private _progress: IProgress;
   public progressElement: HTMLDivElement;
 
@@ -47,58 +49,74 @@ export default class Field {
     this.element = document.createElement('div');
     this.element.className = 'field';
 
+    this._contentWrapper = document.createElement('div');
+    this._contentWrapper.className = 'field__wrapper';
+
+    this._content = document.createElement('div');
+    this._content.className = 'field__content';
+
+    this._contentWrapper.appendChild(this._content);
+
+    this.element.appendChild(this._contentWrapper);
+
     this.element.addEventListener('click', this);
     this.element.addEventListener('contextmenu', this);
     this.element.addEventListener('dblclick', this);
     this.element.addEventListener('mouseup', this);
     this.element.addEventListener('keydown', this);
+    this.element.addEventListener('scroll', this);
   }
 
   public renderAll(): void {
-    this.element.innerHTML = '';
-    this.element.style.width = `${this._gameState.game.width * 34}px`;
-    this.element.className = 'field';
+    this._content.innerHTML = '';
+    const {width, height, contentHeight, contentWidth, visibleHeight, visibleWidth} = this._gameState.game;
+    this._contentWrapper.style.width = `${width * 34}px`;
+    this._contentWrapper.style.height = `${height * 34}px`;
+    this._content.style.width = `${contentWidth * 34}px`;
+    this.element.className = `field ${this._gameState.game.needScroll ? 'field_scroll' : ''}`;
+    this.element.style.width = `${visibleWidth * 34}px`;
+    this.element.style.height = `${visibleHeight * 34}px`;
 
-    this._gameState.field.isRenderInProgres = true;
-    this._gameState.field.totalRendered = 0;
-    this._batchTimer = setTimeout((): void => {
-      if (
-        this._gameState.field.isRenderInProgres &&
-        this._gameState.field.totalRendered / this._gameState.field.field.length < 0.5
-      ) {
-        this._progress.startUpdateProgress();
+    const fragment = document.createDocumentFragment();
+
+    const stepColumn = width - contentWidth;
+    let index = (
+      width * this._gameState.field.top + this._gameState.field.left
+    );
+    for (let j = 0; j < contentHeight; j++) {
+      for (let i = 0; i < contentWidth; i++) {
+        fragment.appendChild(createCell(index, this._gameState));
+        index++;
       }
-    }, 500) as unknown as number;
-    this._renderBatch(0, 10000);
+      index += stepColumn;
+    }
+
+    this._updatePosition();
+
+    this.element.scrollLeft = (this._gameState.field.left + this._gameState.field.leftExtraCount) * 34;
+    this.element.scrollTop = (this._gameState.field.top + this._gameState.field.topExtraCount) * 34;
+
+    this._content.appendChild(fragment);
   }
 
-  private _renderBatch(from: number, limit: number): void {
-    const fragment = document.createDocumentFragment();
-    const end = Math.min(this._gameState.field.field.length, from + limit);
+  private _updatePosition(): void {
+    const leftPosition = Math.min(
+      this._gameState.field.left, this._gameState.game.width - this._gameState.game.contentWidth
+    ) * 34;
+    const topPosition = Math.min(
+      this._gameState.field.top,
+      this._gameState.field.top, this._gameState.game.height - this._gameState.game.contentHeight
+    ) * 34;
 
-    for (let i = from; i < end; i++) {
-      fragment.appendChild(createCell());
-    }
-
-    this.element.appendChild(fragment);
-
-    this._gameState.field.totalRendered = from + limit;
-
-    if (end < this._gameState.field.field.length) {
-      requestAnimationFrame(() => {
-        this._renderBatch(from + limit, limit);
-      });
-    } else {
-      this._gameState.field.isRenderInProgres = false;
-      clearInterval(this._batchTimer);
-    }
+    this._content.style.left = `${leftPosition}px`;
+    this._content.style.top = `${topPosition}px`;
   }
 
   public renderCell(id: number): void {
     const locked = this._gameState.field.showAllBombs || this._gameState.game.state === 'win'
     this.element.className = `field ${locked ? 'field_locked' : ''}`
 
-    renderCell(this.element.children[id] as HTMLButtonElement, this._gameState.field.field[id], this._gameState.field.showAllBombs);
+    renderCell(this._content.children[id] as HTMLButtonElement, this._gameState.field.field[id], this._gameState.field.showAllBombs);
   }
 
   public reRenderAll(): void {
@@ -109,13 +127,22 @@ export default class Field {
       const cell = this._gameState.field.field[i];
 
       if (cell & IS_BOMB_BIT_FLAG) {
-        renderCell(this.element.children[i] as HTMLButtonElement, cell, this._gameState.field.showAllBombs);
+        renderCell(this._content.children[i] as HTMLButtonElement, cell, this._gameState.field.showAllBombs);
       }
     }
   }
 
   public handleEvent(e: MouseEvent | KeyboardEvent): void {
     e.preventDefault();
+
+    if (e.type === 'scroll') {
+      this._gameState.field.left = this.element.scrollLeft / 34 | 0;
+      this._gameState.field.top = this.element.scrollTop / 34 | 0;
+      console.log(this._gameState.field.left, this._gameState.field.top);
+      this._updatePosition();
+      return;
+    }
+
     if (this._isLockedEvents) {
       return;
     }

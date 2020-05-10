@@ -15,6 +15,14 @@ import {
 } from 'helpers/utils';
 
 const createApp = (schema: SchemaType, root: HTMLDivElement): void => {
+  const calcStartPosition = (): void => {
+    schema.field.left = schema.game.width / 2 - schema.game.contentWidth / 2;
+    schema.field.top = schema.game.height / 2 - schema.game.contentHeight / 2;
+    schema.field.leftExtraCount = (schema.game.contentWidth - schema.game.visibleWidth) >> 1;
+    schema.field.topExtraCount = (schema.game.contentHeight - schema.game.visibleHeight) >> 1;
+    console.log(schema.field);
+  };
+
   const onStart = (): void => {
     const totalCells = schema.game.width * schema.game.height;
 
@@ -29,7 +37,13 @@ const createApp = (schema: SchemaType, root: HTMLDivElement): void => {
     schema.field.showAllBombs = false;
     schema.field.field = fieldGeneratorEmpty(schema.game.width, schema.game.height);
     schema.field.isGenerated = false;
+    schema.game.visibleHeight = Math.min(schema.game.height, 20);
+    schema.game.visibleWidth = Math.min(schema.game.width, 20);
+    schema.game.contentWidth = Math.min(schema.game.width, schema.game.visibleWidth + 4);
+    schema.game.contentHeight = Math.min(schema.game.height, schema.game.visibleHeight + 4);
+    schema.game.needScroll = schema.game.visibleHeight < schema.game.height || schema.game.visibleWidth < schema.game.width;
 
+    calcStartPosition();
     field.renderAll();
   };
 

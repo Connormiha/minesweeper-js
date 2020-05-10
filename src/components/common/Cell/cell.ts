@@ -30,12 +30,14 @@ const getAriaLabel = (cell: number): string => {
 
 const defaultClassName = 'cell cell_close';
 
-export const createCell = (): HTMLButtonElement => {
+export const createCell = (i: number, state: any): HTMLButtonElement => {
   const element = document.createElement('button');
 
   element.type = 'button';
   element.setAttribute('aria-label', 'not oppened cell');
   element.className = defaultClassName;
+  element.style.fontSize = '10px';
+  element.innerHTML = `${i / state.game.width | 0}/${i % state.game.width}`;
 
   return element;
 };
