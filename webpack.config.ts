@@ -83,14 +83,10 @@ const webpackConfig: IConfiguration = {
           },
           compress: {
             // https://github.com/mishoo/UglifyJS2/pull/2325
-            // eslint-disable-next-line @typescript-eslint/camelcase
             unsafe_methods: true,
-            // eslint-disable-next-line @typescript-eslint/camelcase
             unsafe_arrows: true,
-            // eslint-disable-next-line @typescript-eslint/camelcase
             drop_console: true,
             passes: 3,
-            // eslint-disable-next-line @typescript-eslint/camelcase
             pure_funcs: ['invariant'],
           },
         },

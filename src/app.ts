@@ -94,6 +94,7 @@ const createApp = (schema: SchemaType, root: HTMLDivElement): void => {
               return false;
             }
 
+            // eslint-disable-next-line sonarjs/prefer-single-boolean-return
             if ((cell & (IS_OPENED_BIT_FLAG | IS_UNKNOWN_BIT_FLAG)) === 0) {
               return true;
             }

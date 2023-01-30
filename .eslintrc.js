@@ -22,8 +22,10 @@ module.exports = {
   ],
   rules: {
     'indent': ['error', 2, {SwitchCase: 1}],
-    '@typescript-eslint/interface-name-prefix': ['error', {
-        prefixWithI: 'always'
+    '@typescript-eslint/naming-convention': ['error', {
+      selector: 'interface',
+      format: ["PascalCase"],
+      custom: { regex: "^I[A-Z]", match: true }
     }],
     '@typescript-eslint/no-use-before-define': 'off',
     'sonarjs/cognitive-complexity': ['error', 40]
